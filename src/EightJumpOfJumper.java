@@ -1,85 +1,34 @@
 public class EightJumpOfJumper {
 
-    private int[] horizontal;
-    private int[] vertical;
+    private Jumper jumper;
     private int[][] board;
-    private int[][] accessibility;
-    private int currentRow, currentColumn; //ustawiamy
-    //osiem ruchow skoczka
+    private int currentRow, currentColumn;
     private int[] difficultyLevel;
     private int[] movementsOfJumper;
     private int jumpCounter;
     private int counterJumper;
 
-    public EightJumpOfJumper(int jumpCounter) {
-        this.jumpCounter = jumpCounter;
-        this.horizontal = new int[8];//poziomo
-        this.vertical = new int[8];//pionowo
+    public EightJumpOfJumper(Jumper jumper) {
+        this.jumper = jumper;
+        this.jumpCounter = 1;
         this.board = new int[8][8];
-        this.accessibility = new int[8][8];//poziom trudnosci -> najmniejsza dostepnosc pol heudestyka
         this.currentRow = 0;
         this.currentColumn = 0;
-        this.difficultyLevel = new int[8]; // poziom trudnosci numer
-        this.movementsOfJumper = new int[8]; //dane ruchy skoczka dostepne
+        this.difficultyLevel = new int[8];
+        this.movementsOfJumper = new int[8]; //jumper moves available
         this.counterJumper = 0;
 
-        createValueFOrEightJumperMovements();
-
-        fillTheBoardAccessibility();
         fillTheBoardsWithZeros();
         fillTheTabWithZeros(difficultyLevel);
         fillTheTabWithZeros(movementsOfJumper);
-
-
     }
 
-    public int[] getHorizontal() {
-        return horizontal;
-    }
-    public void setHorizontal(int[] horizontal) {
-        this.horizontal = horizontal;
-    }
-    public int[] getVertical() {
-        return vertical;
-    }
-    public void setVertical(int[] vertical) {
-        this.vertical = vertical;
-    }
-    public int[][] getBoard() {
-        return board;
-    }
-    public void setBoard(int[][] board) {
-        this.board = board;
-    }
-    public int[][] getAccessibility() {
-        return accessibility;
-    }
-    public void setAccessibility(int[][] accessibility) {
-        this.accessibility = accessibility;
-    }
-    public int getCurrentRow() {
-        return currentRow;
-    }
-    public void setCurrentRow(int currentRow) {
-        this.currentRow = currentRow;
-    }
-    public int getCurrentColumn() {
-        return currentColumn;
-    }
-    public void setCurrentColumn(int currentColumn) {
-        this.currentColumn = currentColumn;
-    }
     public int[] getDifficultyLevel() {
         return difficultyLevel;
     }
-    public void setDifficultyLevel(int[] difficultyLevel) {
-        this.difficultyLevel = difficultyLevel;
-    }
+
     public int[] getMovementsOfJumper() {
         return movementsOfJumper;
-    }
-    public void setMovementsOfJumper(int[] movementsOfJumper) {
-        this.movementsOfJumper = movementsOfJumper;
     }
     public void fillTheBoardsWithZeros() {
         for (int i = 0; i < board.length; i++) {
@@ -95,87 +44,14 @@ public class EightJumpOfJumper {
         }
     }
 
-    //fill the array difficulty level
-    private void fillTheBoardAccessibility() {
-        int zero_seven[] = {2, 3 ,4, 4, 4, 4, 3, 2}; // 2 , 3, 4 ,6, 8
-        int six_one[] = {3, 4, 6, 6, 6, 6, 4, 3};
-        int two_three_four_five[] = {4, 6, 8, 8, 8, 8, 6, 4};
-        for(int i = 0; i < accessibility.length; i++) {
-            switch (i) {
-                case 0: case 7:
-                    accessibility[i] = zero_seven;
-                    break;
 
-                case 2: case 3: case 4: case 5:
-                    accessibility[i] = two_three_four_five;
-                    break;
-                case 1: case 6:
-                    accessibility[i] = six_one;
-                    break;
-            }
-        }
-    }
-
-
-    private void createValueFOrEightJumperMovements() {
-        for (int i = 0; i < vertical.length; i++) {//rows
-            for (int j = i; j == i ; j++) { //columns
-                {
-                    switch (i) {
-                        case 0: {
-                            horizontal[j] = 2;
-                            vertical[i] = -1;
-                            break;
-                        }
-                        case 1: {
-                            horizontal[j] = 1;
-                            vertical[i] = -2;
-                            break;
-                        }
-                        case 2: {
-                            horizontal[j] = -1;
-                            vertical[i] = -2;
-                            break;
-                        }
-                        case 3: {
-                            horizontal[j] = -2;
-                            vertical[i] = -1;
-                            break;
-                        }
-                        case 4: {
-                            horizontal[j] = -2;
-                            vertical[i] = 1;
-                            break;
-                        }
-                        case 5: {
-                            horizontal[j] = -1;
-                            vertical[i] = 2;
-                            break;
-                        }
-                        case 6: {
-                            horizontal[j] = 1;
-                            vertical[i] = 2;
-                            break;
-                        }
-                        case 7: {
-                            horizontal[j] = 2;
-                            vertical[i] = 1;
-                            break;
-                        }
-                    }
-                }
-            }
-
-        }
-    }
-
-    public void nextJumpInArray () {
+    public void nextJumpInArray() {
         int i = 0;
         while(jumpCounter < 65) {
             checkJumperMovements();
             i++;
         }
-        System.out.println("\n\n**************\nthe last array :\nmovements found is -> " + i);
+        System.out.println("\nthe number of jumps found is " + i + " from 64 !!!");
         showArray();
 
         if(i == 64) {
@@ -184,59 +60,58 @@ public class EightJumpOfJumper {
 
     }
 
-
     public void checkJumperMovements() {
-        boolean foundAnEmptyField = false, exit = false, searchEmptyField = false;
+        boolean foundAnEmptyField = false, exit = false, foundEmptyField = false;
         int row = 0, column = 0;
 
         while(! exit) {
             for (int i = 0; i < 8; i++) { // 8 movements
                 switch (i) {
                     case 0: {
-                        row = currentRow + vertical[i];
-                        column = currentColumn + horizontal[i];
+                        row = currentRow + jumper.getVertical()[i];
+                        column = currentColumn + jumper.getHorizontal()[i];
                         foundAnEmptyField = calculateResult(row, column);
                         break;
                     }
                     case 1: {
-                        row = currentRow + vertical[i];
-                        column = currentColumn + horizontal[i];
+                        row = currentRow + jumper.getVertical()[i];
+                        column = currentColumn + jumper.getHorizontal()[i];
                         foundAnEmptyField = calculateResult(row, column);
                         break;
                     }
                     case 2: {
-                        row = currentRow + vertical[i];
-                        column = currentColumn + horizontal[i];
+                        row = currentRow + jumper.getVertical()[i];
+                        column = currentColumn + jumper.getHorizontal()[i];
                         foundAnEmptyField = calculateResult(row, column);
                         break;
                     }
                     case 3: {
-                        row = currentRow + vertical[i];
-                        column = currentColumn + horizontal[i];
+                        row = currentRow + jumper.getVertical()[i];
+                        column = currentColumn + jumper.getHorizontal()[i];
                         foundAnEmptyField = calculateResult(row, column);
                         break;
                     }
                     case 4: {
-                        row = currentRow + vertical[i];
-                        column = currentColumn + horizontal[i];
+                        row = currentRow + jumper.getVertical()[i];
+                        column = currentColumn + jumper.getHorizontal()[i];
                         foundAnEmptyField = calculateResult(row, column);
                         break;
                     }
                     case 5: {
-                        row = currentRow + vertical[i];
-                        column = currentColumn + horizontal[i];
+                        row = currentRow + jumper.getVertical()[i];
+                        column = currentColumn + jumper.getHorizontal()[i];
                         foundAnEmptyField = calculateResult(row, column);
                         break;
                     }
                     case 6: {
-                        row = currentRow + vertical[i];
-                        column = currentColumn + horizontal[i];
+                        row = currentRow + jumper.getVertical()[i];
+                        column = currentColumn + jumper.getHorizontal()[i];
                         foundAnEmptyField = calculateResult(row, column);
                         break;
                     }
                     case 7: {
-                        row = currentRow + vertical[i];
-                        column = currentColumn + horizontal[i];
+                        row = currentRow + jumper.getVertical()[i];
+                        column = currentColumn + jumper.getHorizontal()[i];
                         foundAnEmptyField = calculateResult(row, column);
                         break;
                     }
@@ -244,40 +119,49 @@ public class EightJumpOfJumper {
                 }
                 if(foundAnEmptyField) { //found movement
                     checkDifficultyLevel(i , row, column);
-                    searchEmptyField = true;
+                    foundEmptyField = true;
                 }
 
 
             }
-            if(searchEmptyField) { //jesli sa jakies wolne pola dostepne to rusz sie skoczkiem !!!!
-                //gdy zakonczy to znajdz najlepsze pole do ruszenia sie skoczkiem
-                int minValue = foundMinValueInTabdifficultyLevel(difficultyLevel); //mamy min wartosc poziomu trudnosci
-                for (int j = 0; j < difficultyLevel.length; j++) {
-                    if (difficultyLevel[j] == minValue) {
-                        int actuallMovements = movementsOfJumper[j];
-                        //przypisujemy dany wybrany najlepszy ruch 0 - 7 !!!!!
-                        row = currentRow + vertical[actuallMovements]; // dany najlepszy ruch skoczka wybrany ustawiamy
-                        column = currentColumn + horizontal[actuallMovements];
 
-                        fillTheTabWithZeros(movementsOfJumper); //zerujemy tablice dwie
-                        fillTheTabWithZeros(difficultyLevel);
+            exit = searchEmptyField(row, column, foundEmptyField, exit);
 
-                        currentRow = row; //zmieniamy pozycje skoczka
-                        currentColumn = column;
-                        board[currentRow][currentColumn] = ++jumpCounter;
-                        exit = true;
+        }
+
+    }
 
 
-                    }
+     //if there are any free fields available then move the jumper
+    // when it finishes, find the best field to move with a jumper
+    private boolean searchEmptyField(int row, int column, boolean foundEmptyField, boolean exit) {
+
+        if(foundEmptyField) {
+            int minValue = foundMinValueInTabdifficultyLevel(difficultyLevel);
+            for (int j = 0; j < difficultyLevel.length; j++) {
+                if (difficultyLevel[j] == minValue) {
+                    int actuallMovements = movementsOfJumper[j];
+
+                    row = currentRow + jumper.getVertical()[actuallMovements]; // attributes the selected best move to the selected move 0 - 7
+                    column = currentColumn + jumper.getHorizontal()[actuallMovements];
+
+                    fillTheTabWithZeros(movementsOfJumper); //resets two arrays
+                    fillTheTabWithZeros(difficultyLevel);
+
+                    currentRow = row; //changes the jumper's position
+                    currentColumn = column;
+                    board[currentRow][currentColumn] = ++jumpCounter;
+                    exit = true;
+
+
                 }
-            } else { // jesli nie to zakoncz program
-                System.out.println("finish search new movements !!!");
-                exit = true;
-                jumpCounter = 65;
             }
-
-        }//koniec petli while
-
+        } else {
+            System.out.println("\n**************************************\n" + jumper.getCount() + " <- full jump of the jumper !!!");
+            exit = true;
+            jumpCounter = 65;
+        }
+        return exit;
     }
 
 
@@ -291,14 +175,12 @@ public class EightJumpOfJumper {
         return min;
     }
 
-    //sprawdzamy dany poziom trudnosci
+    //checks the given difficulty level
     private void checkDifficultyLevel(int numberMovements,int row, int column) {
-        //todo tablica z poziomami, potem przypisac do nowej tablicy
-        //static int[][] availableFieldsTab = new int[8][8]; //numer poziom trudnosci, numer ruchu 0-7
         for(int i = 0; i < difficultyLevel.length; i++) {
             if(difficultyLevel[i] == 0) {
-                difficultyLevel[i] = accessibility[row][column]; //przypisuje poziom trudnosci
-                movementsOfJumper[i] = numberMovements; //dany ruch skoczka wolny
+                difficultyLevel[i] = jumper.getAccessibility()[row][column];
+                movementsOfJumper[i] = numberMovements;
                 break;
             }
         }
@@ -330,33 +212,32 @@ public class EightJumpOfJumper {
     }
 
     private void showArray () {
-        System.out.println("\n**********************");
         for (int[] row : board) {
             for (int column : row) {
                 System.out.printf("%4d", column);
             }
             System.out.println();
         }
-        System.out.println("**********************\n");
+        System.out.println("**************************************\n");
     }
 
 
     public void startJump() {
-        //dodaje petle dla skoczka
         for(int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[i].length; j++) {
                 currentRow = i;
                 currentColumn = j;
-                board[currentRow][currentColumn] = jumpCounter; //ustawiamy skoczka w nowym miejscu
+                board[currentRow][currentColumn] = jumpCounter; //sets the jumper in a new place
 
                 nextJumpInArray();
 
-                fillTheBoardsWithZeros();//zerujemy
+                fillTheBoardsWithZeros();
                 fillTheTabWithZeros(getDifficultyLevel());
                 fillTheTabWithZeros(getMovementsOfJumper());
-                jumpCounter = 1; //ustawiamy od nowa skoczka
+                jumpCounter = 1; // sets the jumper over again
+                jumper.setCount(1);
             }
         }
-        System.out.println("64 jumper is " + counterJumper);
+        System.out.println("\n\n\n64 jumps found -> " + counterJumper + " !!!!!");
     }
 }
